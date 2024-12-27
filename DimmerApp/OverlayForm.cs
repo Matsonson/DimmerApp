@@ -1,6 +1,7 @@
 using DimmerApp;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -8,6 +9,8 @@ using System.Windows.Forms;
 
 public class OverlayForm : Form
 {
+
+    public List<OverlayForm> overlays = new List<OverlayForm>();
 
     // Import the necessary function from the User32.dll
     [DllImport("user32.dll", SetLastError = true)]
@@ -43,5 +46,6 @@ public class OverlayForm : Form
         SetWindowLong(this.Handle, GWL_EXSTYLE, exStyle | WS_EX_LAYERED | WS_EX_TRANSPARENT);
 
     }
+
 
 }

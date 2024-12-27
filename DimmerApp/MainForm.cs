@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -12,21 +13,35 @@ namespace DimmerApp {
 public class MainForm : Form
     {
         private WindowChecker windowChecker;
-        public static AppConfig config;
-        private ComboBox screenComboBox;
-        private Button applyButton;
+        public static AppConfig savedConfig;
         private Button editConfigButton;
         private List<string> screenNames = new List<string>();
-        private bool windowMatch = false;
-        private List<OverlayForm> overlays = new List<OverlayForm>();
+        private OverlayManager overlayManager;
+        private NotifyIcon notifyIcon;
+        private ContextMenuStrip contextMenu;
 
         public MainForm()
         {
-            this.Text = "Select Screen";
+            this.Text = "Screen dimmer";
             this.Width = 300;
             this.Height = 200;
 
             windowChecker = new WindowChecker();
+            overlayManager = new OverlayManager(this); // Pass the form instance
+
+            // Initialize NotifyIcon
+            notifyIcon = new NotifyIcon();
+            notifyIcon.Icon = SystemIcons.Application; // Set your icon here
+            notifyIcon.Text = "DimmerApp";
+            notifyIcon.Visible = true;
+
+            // Initialize ContextMenu
+            contextMenu = new ContextMenuStrip();
+            contextMenu.Items.Add("Show", null, ShowForm);
+            contextMenu.Items.Add("Exit", null, ExitApplication);
+            notifyIcon.ContextMenuStrip = contextMenu;
+
+            notifyIcon.DoubleClick += ShowForm;
         }
 
         protected override void OnLoad(EventArgs e)
@@ -34,15 +49,6 @@ public class MainForm : Form
             base.OnLoad(e);
 
             AppColors.ApplyFormStyle(this);
-
-            applyButton = new Button
-            {
-                Text = "Apply",
-                Left = 100,
-                Top = 60,
-                Width = 100,
-            };
-            AppColors.ApplyButtonStyle(applyButton);
 
             editConfigButton = new Button
             {
@@ -53,118 +59,64 @@ public class MainForm : Form
             };
             AppColors.ApplyButtonStyle(editConfigButton);
 
-            applyButton.Click += ApplyButton_Click;
             editConfigButton.Click += EditConfigButton_Click;
 
-            this.Controls.Add(screenComboBox);
-            this.Controls.Add(applyButton);
             this.Controls.Add(editConfigButton);
 
+            // Hide the form initially
+            this.WindowState = FormWindowState.Minimized;
+            this.ShowInTaskbar = false;
         }
-
 
         private void ApplyButton_Click(object sender, EventArgs e)
         {
-            //ApplyOverlay();
-        }
-
-        private void ApplyOverlay()
-        {
-            if (InvokeRequired)
-            {
-                Invoke(new Action(ApplyOverlay));
-                return;
-            }
-
-            Screen[] screensToDim = Screen.AllScreens;
-            screensToDim = screensToDim.Where(s => s.DeviceName != config.DefaultScreen).ToArray();
-
-            foreach (Screen screen in screensToDim)
-            {
-                var overlay = new OverlayForm(screen, config);
-                overlay.Show();
-                overlays.Add(overlay);
-            }
-            Debug.WriteLine("Overlay applied.");
-        }
-
-        private void Clearoverlay()
-        {
-            if (InvokeRequired)
-            {
-                Invoke(new Action(Clearoverlay));
-                return;
-            }
-
-            foreach (OverlayForm overlay in overlays)
-            {
-                overlay.Close();
-            }
-            overlays.Clear();
-            Debug.WriteLine("Overlay cleared.");
+            // ApplyOverlay();
         }
 
         private void EditConfigButton_Click(object sender, EventArgs e)
         {
-            var configEditor = new ConfigEditor();
+            var configEditor = new ConfigEditor(overlayManager);
             configEditor.Show();
         }
 
         public void LoadConfig()
         {
-            config = ConfigManager.LoadConfig("config.json");
+            savedConfig = ConfigManager.LoadConfig("config.json");
         }
 
         private async void GetActiveWindow()
         {
-            if (config == null)
+            if (savedConfig == null)
             {
                 LoadConfig();
             }
 
-            await Task.Run(async () =>
-            {
-                bool overlayApplied = false;
-
-                while (true)
-                {
-                    try
-                    {
-                        string activeWindowTitle = WindowChecker.GetActiveWindowTitle();
-                        if (activeWindowTitle != null && activeWindowTitle.Contains("Home"))
-                        {
-                            if (!overlayApplied)
-                            {
-                                windowMatch = true;
-                                ApplyOverlay();
-                                overlayApplied = true;
-                            }
-                        }
-                        else
-                        {
-                            if (overlayApplied)
-                            {
-                                windowMatch = false;
-                                Clearoverlay();
-                                overlayApplied = false;
-                            }
-                        }
-                        Debug.WriteLine(windowMatch.ToString());
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Exception in GetActiveWindow: {ex.Message}");
-                    }
-
-                    await Task.Delay(1000);
-                }
-            });
+            overlayManager.GetActiveWindow(savedConfig);
         }
 
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
             GetActiveWindow();
+        }
+
+        private void ShowForm(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Normal;
+            this.ShowInTaskbar = true;
+            this.Show();
+        }
+
+        private void ExitApplication(object sender, EventArgs e)
+        {
+            notifyIcon.Visible = false;
+            Application.Exit();
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+            notifyIcon.Visible = false;
         }
     }
 }

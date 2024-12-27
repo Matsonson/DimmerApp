@@ -46,6 +46,7 @@ namespace DimmerApp
             this.colorPickerButton = new System.Windows.Forms.Button();
             this.colorHintLabel = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.previewButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.opacityNumberUpDown)).BeginInit();
             this.SuspendLayout();
             // 
@@ -176,12 +177,23 @@ namespace DimmerApp
             this.colorHintLabel.TabIndex = 14;
             this.colorHintLabel.Text = "🔳";
             // 
+            // previewButton
+            // 
+            this.previewButton.Location = new System.Drawing.Point(188, 293);
+            this.previewButton.Name = "previewButton";
+            this.previewButton.Size = new System.Drawing.Size(75, 23);
+            this.previewButton.TabIndex = 15;
+            this.previewButton.Text = "Preview";
+            this.previewButton.UseVisualStyleBackColor = true;
+            this.previewButton.Click += new System.EventHandler(this.previewButton_Click);
+            // 
             // ConfigEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancelButton;
             this.ClientSize = new System.Drawing.Size(502, 328);
+            this.Controls.Add(this.previewButton);
             this.Controls.Add(this.colorHintLabel);
             this.Controls.Add(this.colorPickerButton);
             this.Controls.Add(this.loadConfigBtn);
@@ -226,5 +238,6 @@ namespace DimmerApp
         private System.Windows.Forms.Button colorPickerButton;
         private System.Windows.Forms.Label colorHintLabel;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.Button previewButton;
     }
 }

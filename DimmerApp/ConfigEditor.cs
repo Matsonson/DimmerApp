@@ -15,12 +15,14 @@ namespace DimmerApp
     {
         private AppConfig oldConfig;
         private AppConfig currentConfig;
+        private OverlayManager overlayManager;
         private List<string> currentScreenNames;
         private Color selectedColor;
         private bool colorValid = false;
 
-        public ConfigEditor()
+        public ConfigEditor(OverlayManager _overlayManager)
         {
+            overlayManager = _overlayManager;
             currentScreenNames = Screen.AllScreens.Select(s => s.DeviceName).ToList();
             InitializeComponent();
         }
@@ -38,6 +40,7 @@ namespace DimmerApp
             AppColors.ApplyNumericUpDownStyle(opacityNumberUpDown);
             AppColors.ApplyTextBoxStyle(colorTextBox);
             AppColors.ApplyButtonStyle(colorPickerButton);
+            AppColors.ApplyButtonStyle(previewButton);
 
             LoadConfig(null, null);
 
@@ -62,7 +65,7 @@ namespace DimmerApp
                 defaultScreenCB.DataSource = currentScreenNames ?? new List<string>();
                 defaultScreenCB.SelectedItem = oldConfig.DefaultScreen;
                 windowTitlesTB.Text = string.Join(",", oldConfig.WindowTitles);
-                partialMatchCheckBox.Checked = oldConfig.CommaSeparateWindowTitles;
+                partialMatchCheckBox.Checked = oldConfig.PartialMatch;
                 colorTextBox.Text = oldConfig.Color.ToString();
                 opacityNumberUpDown.Value = (decimal)oldConfig.Opacity * 100;
             }
@@ -88,15 +91,20 @@ namespace DimmerApp
                 MessageBox.Show("Invalid color format. Please enter a valid color.");
                 return;
             }
+            SetCurrentConfig();
+            ConfigManager.SaveConfig("config.json", currentConfig);
+        }
+
+        private void SetCurrentConfig()
+        {
             currentConfig = new AppConfig
             {
                 DefaultScreen = defaultScreenCB.SelectedItem.ToString(),
                 WindowTitles = windowTitlesTB.Text.Split(',').Select(x => x.Trim()).ToArray(),
-                CommaSeparateWindowTitles = partialMatchCheckBox.Checked,
+                PartialMatch = partialMatchCheckBox.Checked,
                 Color = colorTextBox.Text,
                 Opacity = (float)opacityNumberUpDown.Value / 100
             };
-            ConfigManager.SaveConfig("config.json", currentConfig);
         }
 
         private void ColorPickerButton_Click(object sender, EventArgs e)
@@ -158,7 +166,20 @@ namespace DimmerApp
 
         private void ConfigEditor_FormClosed(object sender, FormClosedEventArgs e)
         {
-            MainForm.config = ConfigManager.LoadConfig("config.json");
+            overlayManager.Clearoverlay();
+            overlayManager.previewMode = false;
+            MainForm.savedConfig = ConfigManager.LoadConfig("config.json");
+        }
+
+        private void previewButton_Click(object sender, EventArgs e)
+        {
+            overlayManager.previewMode = true;
+            if (overlayManager.overlayApplied)
+            {
+                overlayManager.Clearoverlay();
+            }
+            SetCurrentConfig();
+            overlayManager.ApplyOverlay(currentConfig);
         }
     }
 }
