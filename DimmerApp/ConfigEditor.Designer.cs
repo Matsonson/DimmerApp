@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.defaultScreenCB = new System.Windows.Forms.ComboBox();
             this.windowTitlesTB = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -43,6 +44,7 @@
             this.loadConfigBtn = new System.Windows.Forms.Button();
             this.colorPickerButton = new System.Windows.Forms.Button();
             this.colorHintLabel = new System.Windows.Forms.Label();
+            this.screenInfoToolTip = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.opacityNumberUpDown)).BeginInit();
             this.SuspendLayout();
             // 
@@ -68,7 +70,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(79, 13);
             this.label1.TabIndex = 2;
-            this.label1.Text = "Default screen:";
+            this.label1.Text = "Primary screen:";
             // 
             // label2
             // 
@@ -192,6 +194,8 @@
             this.Controls.Add(this.defaultScreenCB);
             this.Name = "ConfigEditor";
             this.Text = "ConfigEditor";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ConfigEditor_FormClosed);
+            this.Load += new System.EventHandler(this.ConfigEditor_Load);
             ((System.ComponentModel.ISupportInitialize)(this.opacityNumberUpDown)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -215,5 +219,6 @@
         private System.Windows.Forms.Button loadConfigBtn;
         private System.Windows.Forms.Button colorPickerButton;
         private System.Windows.Forms.Label colorHintLabel;
+        private System.Windows.Forms.ToolTip screenInfoToolTip;
     }
 }

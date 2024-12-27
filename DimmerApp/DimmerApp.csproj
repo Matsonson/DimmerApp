@@ -77,6 +77,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppColors.cs" />
     <Compile Include="AppConfig.cs" />
     <Compile Include="ConfigEditor.cs">
       <SubType>Form</SubType>
@@ -85,7 +86,7 @@
       <DependentUpon>ConfigEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="ConfigManager.cs" />
-    <Compile Include="ScreenSelectorForm.cs">
+    <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="OverlayForm.cs">

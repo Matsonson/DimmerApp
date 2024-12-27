@@ -20,9 +20,9 @@ namespace DimmerApp
         public ConfigEditor(List<string> screennames = null)
         {
             currentScreenNames = screennames;
-            LoadConfig(null, null);
+
             InitializeComponent();
-            PopulateProperties();
+            LoadConfig(null, null);
 
             saveConfigButton.Click += SaveConfig;
             cancelButton.Click += Cancel;
@@ -58,12 +58,14 @@ namespace DimmerApp
             try
             {
                 oldConfig = ConfigManager.LoadConfig("config.json");
+                PopulateProperties();
 
             }
             catch
             {
                 MessageBox.Show("Error loading configuration file. Using default values.");
             }
+            PopulateProperties();
         }
 
         private void SaveConfig(object sender, EventArgs e)
@@ -121,6 +123,23 @@ namespace DimmerApp
         private void Cancel(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void ConfigEditor_Load(object sender, EventArgs e)
+        {
+            screenInfoToolTip.SetToolTip(defaultScreenCB, "Select the screen on which the overlay will NOT be displayed.");
+            screenInfoToolTip.SetToolTip(windowTitlesTB, "Enter a comma-separated list of window titles to trigger the dim.");
+            screenInfoToolTip.SetToolTip(partialMatchCheckBox, "Check to match window titles partially.");
+            screenInfoToolTip.SetToolTip(colorTextBox, "Enter the color of the overlay in hexadecimal or html format.");
+            screenInfoToolTip.SetToolTip(opacityNumberUpDown, "Set the opacity of the overlay.");
+            screenInfoToolTip.SetToolTip(saveConfigButton, "Save the current configuration.");
+            screenInfoToolTip.SetToolTip(cancelButton, "Discard changes and close the editor.");
+            screenInfoToolTip.SetToolTip(loadConfigBtn, "Load the configuration from the config.json-file.");
+        }
+
+        private void ConfigEditor_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            MainForm.config = ConfigManager.LoadConfig("config.json");
         }
     }
 }

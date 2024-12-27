@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DimmerApp { 
-    class WindowHelper
+    class WindowChecker
     {
         [DllImport("user32.dll")]
         public static extern IntPtr GetForegroundWindow();
@@ -23,5 +24,20 @@ namespace DimmerApp {
             }
             return null;
         }
+
+        public async Task<string> CheckActiveWindow()
+        {
+            while (true)
+            {
+                string activeWindowTitle = GetActiveWindowTitle();
+                if (activeWindowTitle != null)
+                {
+                    Console.WriteLine(activeWindowTitle);
+                }
+                await Task.Delay(1000);
+            }
+        }
     }
+
+
 }

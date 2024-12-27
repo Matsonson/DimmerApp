@@ -1,33 +1,39 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DimmerApp { 
-    public class ScreenSelectorForm : Form
+public class MainForm : Form
     {
+        private WindowChecker windowChecker;
+        public static AppConfig config;
         private ComboBox screenComboBox;
         private Button applyButton;
         private Button editConfigButton;
         private List<string> screenNames = new List<string>();
+        private bool windowMatch = false;
 
-        public ScreenSelectorForm()
+        public MainForm()
         {
             this.Text = "Select Screen";
             this.Width = 300;
             this.Height = 200;
-            this.BackColor = System.Drawing.Color.FromArgb(45, 45, 48); // Dark theme background color
-            this.ForeColor = System.Drawing.Color.White; // Dark theme text color
+            this.BackColor = AppColors.DarkThemeBackground;
+            this.ForeColor = AppColors.DarkThemeText;
 
             screenComboBox = new ComboBox
             {
                 Left = 50,
                 Top = 20,
                 Width = 200,
-                BackColor = System.Drawing.Color.FromArgb(30, 30, 30),
-                ForeColor = System.Drawing.Color.White,
+                BackColor = AppColors.ComboBoxBackground,
+                ForeColor = AppColors.DarkThemeText,
                 FlatStyle = FlatStyle.Flat,
             };
             applyButton = new Button
@@ -36,24 +42,22 @@ namespace DimmerApp {
                 Left = 100,
                 Top = 60,
                 Width = 100,
-                BackColor = System.Drawing.Color.FromArgb(28, 28, 28),
-                ForeColor = System.Drawing.Color.White,
+                BackColor = AppColors.ButtonBackground,
+                ForeColor = AppColors.DarkThemeText,
                 FlatStyle = FlatStyle.Flat,
-                FlatAppearance = { BorderColor = System.Drawing.Color.FromArgb(20, 20, 20) }, // Darker border color
+                FlatAppearance = { BorderColor = AppColors.ButtonBorder },
             };
             editConfigButton = new Button
             {
                 Text = "Edit Config",
                 Left = 100,
-                Top = 100, // Adjusted Top property
+                Top = 100,
                 Width = 100,
-                BackColor = System.Drawing.Color.FromArgb(28, 28, 28),
-                ForeColor = System.Drawing.Color.White,
+                BackColor = AppColors.ButtonBackground,
+                ForeColor = AppColors.DarkThemeText,
                 FlatStyle = FlatStyle.Flat,
-                FlatAppearance = { BorderColor = System.Drawing.Color.FromArgb(20, 20, 20) }, // Darker border color
+                FlatAppearance = { BorderColor = AppColors.ButtonBorder },
             };
-
-
 
             // Populate ComboBox with available screens
             foreach (var screen in Screen.AllScreens)
@@ -73,6 +77,8 @@ namespace DimmerApp {
             this.Controls.Add(screenComboBox);
             this.Controls.Add(applyButton);
             this.Controls.Add(editConfigButton);
+
+            windowChecker = new WindowChecker();
         }
 
         private void ApplyButton_Click(object sender, EventArgs e)
@@ -93,11 +99,46 @@ namespace DimmerApp {
 
         private void EditConfigButton_Click(object sender, EventArgs e)
         {
-
             var configEditor = new ConfigEditor(screenNames);
             configEditor.Show();
         }
 
+        public void LoadConfig()
+        {
+            config = ConfigManager.LoadConfig("config.json");
+        }
 
+        private async void GetActiveWindow()
+        {
+            if (config == null)
+            {
+                LoadConfig();
+            }
+
+            await Task.Run(async () =>
+            {
+                while (true)
+                {
+                    string activeWindowTitle = WindowChecker.GetActiveWindowTitle();
+                    if (activeWindowTitle != null && activeWindowTitle.Contains("Home"))
+                    {
+                        windowMatch = true;
+                    }
+                    else
+                    {
+                        windowMatch = false;
+                    }
+                    Debug.WriteLine(windowMatch.ToString());
+
+                    await Task.Delay(1000);
+                }
+            });
+        }
+
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+            GetActiveWindow();
+        }
     }
 }

@@ -14,7 +14,7 @@ namespace DimmerApp
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new ScreenSelectorForm());
+            Application.Run(new MainForm());
         }
     }
 }
