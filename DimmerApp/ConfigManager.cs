@@ -19,5 +19,18 @@ namespace DimmerApp {
                 return null;
             }
         }
+
+        public static void SaveConfig(string filePath, AppConfig config)
+        {
+            try
+            {
+                string jsonString = JsonSerializer.Serialize(config);
+                File.WriteAllText(filePath, jsonString);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error saving configuration: {ex.Message}");
+            }
+        }
     }
 }

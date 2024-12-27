@@ -1,5 +1,7 @@
 ﻿{
-  "Screen": "\\\\.\\DISPLAY2",
-  "Opacity": 0.5,
-  "WindowTitles": [ "hitman", "valheim" ]
+  "DefaultScreen": "\\\\.\\DISPLAY2",
+  "WindowTitles": [ "hitman", "valheim" ],
+  "CommaSeparateWindowTitles": true,
+  "Color": "0x000000",
+  "Opacity": 0.75
 }
