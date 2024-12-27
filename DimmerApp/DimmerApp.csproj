@@ -79,13 +79,10 @@
   <ItemGroup>
     <Compile Include="AppConfig.cs" />
     <Compile Include="ConfigManager.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="Overlay.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Overlay.cs">
+    <Compile Include="OverlayForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Program.cs" />
