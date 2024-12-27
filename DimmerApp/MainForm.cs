@@ -84,7 +84,7 @@ public class MainForm : Form
             savedConfig = ConfigManager.LoadConfig("config.json");
         }
 
-        private async void GetActiveWindow()
+        private void GetActiveWindow()
         {
             if (savedConfig == null)
             {
