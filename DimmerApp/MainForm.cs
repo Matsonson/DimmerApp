@@ -18,58 +18,40 @@ public class MainForm : Form
         private Button editConfigButton;
         private List<string> screenNames = new List<string>();
         private bool windowMatch = false;
+        private List<OverlayForm> overlays = new List<OverlayForm>();
 
         public MainForm()
         {
             this.Text = "Select Screen";
             this.Width = 300;
             this.Height = 200;
-            this.BackColor = AppColors.DarkThemeBackground;
-            this.ForeColor = AppColors.DarkThemeText;
 
-            screenComboBox = new ComboBox
-            {
-                Left = 50,
-                Top = 20,
-                Width = 200,
-                BackColor = AppColors.ComboBoxBackground,
-                ForeColor = AppColors.DarkThemeText,
-                FlatStyle = FlatStyle.Flat,
-            };
+            windowChecker = new WindowChecker();
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+
+            AppColors.ApplyFormStyle(this);
+
             applyButton = new Button
             {
                 Text = "Apply",
                 Left = 100,
                 Top = 60,
                 Width = 100,
-                BackColor = AppColors.ButtonBackground,
-                ForeColor = AppColors.DarkThemeText,
-                FlatStyle = FlatStyle.Flat,
-                FlatAppearance = { BorderColor = AppColors.ButtonBorder },
             };
+            AppColors.ApplyButtonStyle(applyButton);
+
             editConfigButton = new Button
             {
                 Text = "Edit Config",
                 Left = 100,
                 Top = 100,
                 Width = 100,
-                BackColor = AppColors.ButtonBackground,
-                ForeColor = AppColors.DarkThemeText,
-                FlatStyle = FlatStyle.Flat,
-                FlatAppearance = { BorderColor = AppColors.ButtonBorder },
             };
-
-            // Populate ComboBox with available screens
-            foreach (var screen in Screen.AllScreens)
-            {
-                screenNames.Add(screen.DeviceName);
-            }
-
-            screenComboBox.DataSource = screenNames;
-            if (screenComboBox.Items.Count > 0)
-            {
-                screenComboBox.SelectedIndex = 0;
-            }
+            AppColors.ApplyButtonStyle(editConfigButton);
 
             applyButton.Click += ApplyButton_Click;
             editConfigButton.Click += EditConfigButton_Click;
@@ -78,28 +60,53 @@ public class MainForm : Form
             this.Controls.Add(applyButton);
             this.Controls.Add(editConfigButton);
 
-            windowChecker = new WindowChecker();
         }
+
 
         private void ApplyButton_Click(object sender, EventArgs e)
         {
-            if (screenComboBox.SelectedIndex >= 0)
+            //ApplyOverlay();
+        }
+
+        private void ApplyOverlay()
+        {
+            if (InvokeRequired)
             {
-                Screen selectedScreen = Screen.AllScreens[screenComboBox.SelectedIndex];
-                float opacity = 0.75f; // Set desired opacity
-                var overlay = new OverlayForm(selectedScreen, opacity);
+                Invoke(new Action(ApplyOverlay));
+                return;
+            }
+
+            Screen[] screensToDim = Screen.AllScreens;
+            screensToDim = screensToDim.Where(s => s.DeviceName != config.DefaultScreen).ToArray();
+
+            foreach (Screen screen in screensToDim)
+            {
+                var overlay = new OverlayForm(screen, config);
                 overlay.Show();
-                this.WindowState = FormWindowState.Minimized;
+                overlays.Add(overlay);
             }
-            else
+            Debug.WriteLine("Overlay applied.");
+        }
+
+        private void Clearoverlay()
+        {
+            if (InvokeRequired)
             {
-                MessageBox.Show("Please select a screen.");
+                Invoke(new Action(Clearoverlay));
+                return;
             }
+
+            foreach (OverlayForm overlay in overlays)
+            {
+                overlay.Close();
+            }
+            overlays.Clear();
+            Debug.WriteLine("Overlay cleared.");
         }
 
         private void EditConfigButton_Click(object sender, EventArgs e)
         {
-            var configEditor = new ConfigEditor(screenNames);
+            var configEditor = new ConfigEditor();
             configEditor.Show();
         }
 
@@ -117,18 +124,37 @@ public class MainForm : Form
 
             await Task.Run(async () =>
             {
+                bool overlayApplied = false;
+
                 while (true)
                 {
-                    string activeWindowTitle = WindowChecker.GetActiveWindowTitle();
-                    if (activeWindowTitle != null && activeWindowTitle.Contains("Home"))
+                    try
                     {
-                        windowMatch = true;
+                        string activeWindowTitle = WindowChecker.GetActiveWindowTitle();
+                        if (activeWindowTitle != null && activeWindowTitle.Contains("Home"))
+                        {
+                            if (!overlayApplied)
+                            {
+                                windowMatch = true;
+                                ApplyOverlay();
+                                overlayApplied = true;
+                            }
+                        }
+                        else
+                        {
+                            if (overlayApplied)
+                            {
+                                windowMatch = false;
+                                Clearoverlay();
+                                overlayApplied = false;
+                            }
+                        }
+                        Debug.WriteLine(windowMatch.ToString());
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        windowMatch = false;
+                        Debug.WriteLine($"Exception in GetActiveWindow: {ex.Message}");
                     }
-                    Debug.WriteLine(windowMatch.ToString());
 
                     await Task.Delay(1000);
                 }

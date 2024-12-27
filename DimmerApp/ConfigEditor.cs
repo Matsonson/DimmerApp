@@ -17,19 +17,34 @@ namespace DimmerApp
         private AppConfig currentConfig;
         private List<string> currentScreenNames;
         private Color selectedColor;
-        public ConfigEditor(List<string> screennames = null)
-        {
-            currentScreenNames = screennames;
+        private bool colorValid = false;
 
+        public ConfigEditor()
+        {
+            currentScreenNames = Screen.AllScreens.Select(s => s.DeviceName).ToList();
             InitializeComponent();
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+
+            AppColors.ApplyFormStyle(this);
+            AppColors.ApplyButtonStyle(saveConfigButton);
+            AppColors.ApplyButtonStyle(cancelButton);
+            AppColors.ApplyButtonStyle(loadConfigBtn);
+            AppColors.ApplyComboBoxStyle(defaultScreenCB);
+            AppColors.ApplyTextBoxStyle(windowTitlesTB);
+            AppColors.ApplyNumericUpDownStyle(opacityNumberUpDown);
+            AppColors.ApplyTextBoxStyle(colorTextBox);
+            AppColors.ApplyButtonStyle(colorPickerButton);
+
             LoadConfig(null, null);
 
             saveConfigButton.Click += SaveConfig;
             cancelButton.Click += Cancel;
             loadConfigBtn.Click += LoadConfig;
-
         }
-
 
         private void PopulateProperties()
         {
@@ -58,8 +73,6 @@ namespace DimmerApp
             try
             {
                 oldConfig = ConfigManager.LoadConfig("config.json");
-                PopulateProperties();
-
             }
             catch
             {
@@ -70,6 +83,11 @@ namespace DimmerApp
 
         private void SaveConfig(object sender, EventArgs e)
         {
+            if (!colorValid)
+            {
+                MessageBox.Show("Invalid color format. Please enter a valid color.");
+                return;
+            }
             currentConfig = new AppConfig
             {
                 DefaultScreen = defaultScreenCB.SelectedItem.ToString(),
@@ -78,7 +96,7 @@ namespace DimmerApp
                 Color = colorTextBox.Text,
                 Opacity = (float)opacityNumberUpDown.Value / 100
             };
-            ConfigManager.SaveConfig("config.json",currentConfig);
+            ConfigManager.SaveConfig("config.json", currentConfig);
         }
 
         private void ColorPickerButton_Click(object sender, EventArgs e)
@@ -89,7 +107,6 @@ namespace DimmerApp
                 colorTextBox.Text = selectedColor.ToArgb().ToString("X");
             }
         }
-
 
         private void ColorTextBox_TextChanged(object sender, EventArgs e)
         {
@@ -112,10 +129,12 @@ namespace DimmerApp
                 {
                     selectedColor = ColorTranslator.FromHtml("#" + color);
                 }
+                colorValid = true;
                 return true;
             }
             catch
             {
+                colorValid = false;
                 return false;
             }
         }
@@ -127,14 +146,14 @@ namespace DimmerApp
 
         private void ConfigEditor_Load(object sender, EventArgs e)
         {
-            screenInfoToolTip.SetToolTip(defaultScreenCB, "Select the screen on which the overlay will NOT be displayed.");
-            screenInfoToolTip.SetToolTip(windowTitlesTB, "Enter a comma-separated list of window titles to trigger the dim.");
-            screenInfoToolTip.SetToolTip(partialMatchCheckBox, "Check to match window titles partially.");
-            screenInfoToolTip.SetToolTip(colorTextBox, "Enter the color of the overlay in hexadecimal or html format.");
-            screenInfoToolTip.SetToolTip(opacityNumberUpDown, "Set the opacity of the overlay.");
-            screenInfoToolTip.SetToolTip(saveConfigButton, "Save the current configuration.");
-            screenInfoToolTip.SetToolTip(cancelButton, "Discard changes and close the editor.");
-            screenInfoToolTip.SetToolTip(loadConfigBtn, "Load the configuration from the config.json-file.");
+            toolTip1.SetToolTip(defaultScreenCB, "Select the screen on which the overlay will NOT be displayed.");
+            toolTip1.SetToolTip(windowTitlesTB, "Enter a comma-separated list of window titles to trigger the dim.");
+            toolTip1.SetToolTip(partialMatchCheckBox, "Check to match window titles partially.");
+            toolTip1.SetToolTip(colorTextBox, "Enter the color of the overlay in hexadecimal or html format.");
+            toolTip1.SetToolTip(opacityNumberUpDown, "Set the opacity of the overlay.");
+            toolTip1.SetToolTip(saveConfigButton, "Save the current configuration.");
+            toolTip1.SetToolTip(cancelButton, "Discard changes and close the editor.");
+            toolTip1.SetToolTip(loadConfigBtn, "Load the configuration from the config.json-file.");
         }
 
         private void ConfigEditor_FormClosed(object sender, FormClosedEventArgs e)

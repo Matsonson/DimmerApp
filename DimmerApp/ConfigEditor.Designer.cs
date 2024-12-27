@@ -1,4 +1,5 @@
-﻿namespace DimmerApp
+﻿
+namespace DimmerApp
 {
     partial class ConfigEditor
     {
@@ -44,7 +45,7 @@
             this.loadConfigBtn = new System.Windows.Forms.Button();
             this.colorPickerButton = new System.Windows.Forms.Button();
             this.colorHintLabel = new System.Windows.Forms.Label();
-            this.screenInfoToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.opacityNumberUpDown)).BeginInit();
             this.SuspendLayout();
             // 
@@ -58,9 +59,10 @@
             // 
             // windowTitlesTB
             // 
+            this.windowTitlesTB.ForeColor = System.Drawing.SystemColors.WindowText;
             this.windowTitlesTB.Location = new System.Drawing.Point(26, 96);
             this.windowTitlesTB.Name = "windowTitlesTB";
-            this.windowTitlesTB.Size = new System.Drawing.Size(434, 20);
+            this.windowTitlesTB.Size = new System.Drawing.Size(464, 20);
             this.windowTitlesTB.TabIndex = 1;
             // 
             // label1
@@ -128,7 +130,7 @@
             // 
             // saveConfigButton
             // 
-            this.saveConfigButton.Location = new System.Drawing.Point(334, 293);
+            this.saveConfigButton.Location = new System.Drawing.Point(107, 293);
             this.saveConfigButton.Name = "saveConfigButton";
             this.saveConfigButton.Size = new System.Drawing.Size(75, 23);
             this.saveConfigButton.TabIndex = 10;
@@ -137,16 +139,17 @@
             // 
             // cancelButton
             // 
+            this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.cancelButton.Location = new System.Drawing.Point(415, 293);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 11;
-            this.cancelButton.Text = "Cancel";
+            this.cancelButton.Text = "Close";
             this.cancelButton.UseVisualStyleBackColor = true;
             // 
             // loadConfigBtn
             // 
-            this.loadConfigBtn.Location = new System.Drawing.Point(253, 293);
+            this.loadConfigBtn.Location = new System.Drawing.Point(26, 293);
             this.loadConfigBtn.Name = "loadConfigBtn";
             this.loadConfigBtn.Size = new System.Drawing.Size(75, 23);
             this.loadConfigBtn.TabIndex = 12;
@@ -155,7 +158,7 @@
             // 
             // colorPickerButton
             // 
-            this.colorPickerButton.Location = new System.Drawing.Point(143, 176);
+            this.colorPickerButton.Location = new System.Drawing.Point(175, 173);
             this.colorPickerButton.Name = "colorPickerButton";
             this.colorPickerButton.Size = new System.Drawing.Size(75, 23);
             this.colorPickerButton.TabIndex = 13;
@@ -166,17 +169,18 @@
             // colorHintLabel
             // 
             this.colorHintLabel.AutoSize = true;
-            this.colorHintLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.colorHintLabel.Location = new System.Drawing.Point(122, 176);
+            this.colorHintLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
+            this.colorHintLabel.Location = new System.Drawing.Point(132, 172);
             this.colorHintLabel.Name = "colorHintLabel";
-            this.colorHintLabel.Size = new System.Drawing.Size(25, 20);
+            this.colorHintLabel.Size = new System.Drawing.Size(37, 26);
             this.colorHintLabel.TabIndex = 14;
-            this.colorHintLabel.Text = "⬛";
+            this.colorHintLabel.Text = "🔳";
             // 
             // ConfigEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.cancelButton;
             this.ClientSize = new System.Drawing.Size(502, 328);
             this.Controls.Add(this.colorHintLabel);
             this.Controls.Add(this.colorPickerButton);
@@ -192,8 +196,10 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.windowTitlesTB);
             this.Controls.Add(this.defaultScreenCB);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "ConfigEditor";
-            this.Text = "ConfigEditor";
+            this.ShowIcon = false;
+            this.Text = "Configuration Editor";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ConfigEditor_FormClosed);
             this.Load += new System.EventHandler(this.ConfigEditor_Load);
             ((System.ComponentModel.ISupportInitialize)(this.opacityNumberUpDown)).EndInit();
@@ -219,6 +225,6 @@
         private System.Windows.Forms.Button loadConfigBtn;
         private System.Windows.Forms.Button colorPickerButton;
         private System.Windows.Forms.Label colorHintLabel;
-        private System.Windows.Forms.ToolTip screenInfoToolTip;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
