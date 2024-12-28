@@ -69,7 +69,7 @@ namespace DimmerApp
                     try
                     {
                         string activeWindowTitle = WindowChecker.GetActiveWindowTitle();
-                        if (activeWindowTitle == null) { continue; }
+                        if (activeWindowTitle == null) {await Task.Delay(1000);continue; }
 
                         if (IsTitleMatch(activeWindowTitle, savedConfig))
                         {

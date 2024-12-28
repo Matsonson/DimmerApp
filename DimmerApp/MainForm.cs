@@ -12,26 +12,30 @@ using System.Windows.Forms;
 namespace DimmerApp { 
 public class MainForm : Form
     {
+        private Icon DimmerIcon;
         private WindowChecker windowChecker;
         public static AppConfig savedConfig;
         private Button editConfigButton;
-        private List<string> screenNames = new List<string>();
         private OverlayManager overlayManager;
         private NotifyIcon notifyIcon;
         private ContextMenuStrip contextMenu;
 
         public MainForm()
         {
+            DimmerIcon = new Icon("Icon_DimmerApp.ico");
+
             this.Text = "Screen dimmer";
             this.Width = 300;
             this.Height = 200;
 
             windowChecker = new WindowChecker();
-            overlayManager = new OverlayManager(this); // Pass the form instance
+            overlayManager = new OverlayManager(this);
 
             // Initialize NotifyIcon
             notifyIcon = new NotifyIcon();
-            notifyIcon.Icon = SystemIcons.Application; // Set your icon here
+
+            // Load the icon from the file path
+            notifyIcon.Icon = DimmerIcon;
             notifyIcon.Text = "DimmerApp";
             notifyIcon.Visible = true;
 
@@ -49,6 +53,8 @@ public class MainForm : Form
             base.OnLoad(e);
 
             AppColors.ApplyFormStyle(this);
+
+            this.Icon = DimmerIcon;
 
             editConfigButton = new Button
             {
@@ -117,6 +123,32 @@ public class MainForm : Form
         {
             base.OnFormClosing(e);
             notifyIcon.Visible = false;
+        }
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+            if (this.WindowState == FormWindowState.Minimized)
+            {
+                this.ShowInTaskbar = false;
+            }
+            else if (this.WindowState == FormWindowState.Normal)
+            {
+                this.ShowInTaskbar = true;
+            }
+        }
+
+        private void InitializeComponent()
+        {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+            this.SuspendLayout();
+            // 
+            // MainForm
+            // 
+            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Name = "MainForm";
+            this.ResumeLayout(false);
+
         }
     }
 }
