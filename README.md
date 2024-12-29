@@ -24,7 +24,7 @@ DimmerApp is a Windows Forms application that dims all screens except the defaul
 ### Build from source
 
 1. Clone the repository:
-git clone https://github.com/yourusername/DimmerApp.git
+git clone https://github.com/Matsonson/DimmerApp.git
 
 2. Open the solution in Visual Studio.
 3. Build the solution to restore the NuGet packages and compile the project.
