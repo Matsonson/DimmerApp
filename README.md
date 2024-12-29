@@ -16,8 +16,15 @@ DimmerApp is a Windows Forms application that dims all screens except the defaul
 
 ## Installation
 
+### From .ZIP
+1. Download the latest Release.zip file
+2. Unzip the file to the location of your choice
+3. Run DimmerApp.exe
+
+### Build from source
+
 1. Clone the repository:
-git clone https://github.com/yourusername/DimmerApp.git
+git clone https://github.com/Matsonson/DimmerApp.git
 
 2. Open the solution in Visual Studio.
 3. Build the solution to restore the NuGet packages and compile the project.
@@ -28,6 +35,9 @@ git clone https://github.com/yourusername/DimmerApp.git
 2. Right-click the tray icon to show the main form or exit the application.
 3. Use the "Edit Config" button in the main form to open the configuration editor and modify settings.
 4. The application will automatically dim all screens except the default screen when a window with a specified title is active.
+
+### Run at startup
+To run the app on startup, add shortcut to startup folder. (Win+R -> "shell:startup") 
 
 ## Configuration
 
