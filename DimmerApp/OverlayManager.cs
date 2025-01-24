@@ -16,10 +16,12 @@ namespace DimmerApp
         public bool previewMode = false;
         private List<OverlayForm> overlays = new List<OverlayForm>();
         private Control uiControl;
+        private CancellationTokenSource cancellationTokenSource;
 
         public OverlayManager(Control control)
         {
             uiControl = control;
+            cancellationTokenSource = new CancellationTokenSource();
         }
 
         public void ApplyOverlay(AppConfig config)
@@ -62,14 +64,17 @@ namespace DimmerApp
 
         public async void GetActiveWindow(AppConfig savedConfig)
         {
+            cancellationTokenSource.Cancel(); // Cancel the existing task
+            cancellationTokenSource = new CancellationTokenSource(); // Create a new token source
+
             await Task.Run(async () =>
             {
-                while (true)
+                while (!cancellationTokenSource.Token.IsCancellationRequested)
                 {
                     try
                     {
                         string activeWindowTitle = WindowChecker.GetActiveWindowTitle();
-                        if (activeWindowTitle == null) {await Task.Delay(1000);continue; }
+                        if (activeWindowTitle == null) { await Task.Delay(1000); continue; }
 
                         if (IsTitleMatch(activeWindowTitle, savedConfig))
                         {
@@ -93,7 +98,7 @@ namespace DimmerApp
 
                     await Task.Delay(1000);
                 }
-            });
+            }, cancellationTokenSource.Token);
         }
 
         private bool IsTitleMatch(string activeWindowTitle, AppConfig config)

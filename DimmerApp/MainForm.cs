@@ -82,7 +82,16 @@ public class MainForm : Form
         private void EditConfigButton_Click(object sender, EventArgs e)
         {
             var configEditor = new ConfigEditor(overlayManager);
+            configEditor.FormClosed += ConfigEditor_FormClosed;
             configEditor.Show();
+        }
+
+        private void ConfigEditor_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            // Reload the configuration
+            LoadConfig();
+            // Restart the GetActiveWindow task with the new configuration
+            overlayManager.GetActiveWindow(savedConfig);
         }
 
         public void LoadConfig()
